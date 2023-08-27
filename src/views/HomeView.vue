@@ -4,6 +4,9 @@
     <div>
       <div class="button" @click="bobleStart">冒泡排序</div>
       <div class="button" @click="insertStart">插入排序</div>
+      <div class="button" @click="() => (flag = !flag)">
+        {{ flag ? "暂停" : "开始" }}
+      </div>
     </div>
   </div>
 </template>
@@ -18,6 +21,7 @@ const HEIGHTCENTER = HEIGHT / 2;
 let randomList = Array.from({ length }).map(() => Math.random() * 500);
 
 const count = ref(0);
+const flag = ref(true);
 const canvas = ref<HTMLCanvasElement>();
 const context = ref<CanvasRenderingContext2D | null>();
 
@@ -44,9 +48,17 @@ const draw = (changeList: number[]) => {
     ctx.stroke();
   });
   return new Promise<void>((res) => {
-    setTimeout(() => {
-      res();
-    }, 0);
+    if (flag.value) {
+      setTimeout(() => {
+        res();
+      }, 0);
+    } else {
+      setInterval(() => {
+        if (flag.value) {
+          res();
+        }
+      });
+    }
   });
 };
 
@@ -73,14 +85,14 @@ async function* sort() {
 async function* sort2() {
   for (let i = 1; i < randomList.length; i++) {
     let changeList = [];
-    let perIndex = i - 1;
+    let perIndex = i;
     let count = randomList[i];
-    while (perIndex >= 0 && randomList[perIndex] > count) {
-      randomList[perIndex + 1] = randomList[perIndex];
-      perIndex--;
+    while (perIndex >= 1 && randomList[perIndex - 1] > count) {
+      randomList[perIndex] = randomList[perIndex - 1];
+      perIndex -= 1;
+      changeList.push(perIndex);
     }
     randomList[perIndex] = count;
-    changeList.push(perIndex);
     await draw(changeList);
     yield true;
   }
