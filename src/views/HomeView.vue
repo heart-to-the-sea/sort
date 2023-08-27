@@ -2,7 +2,7 @@
   <div class="home">
     <canvas id="canvas" ref="canvas"></canvas>
     <div>
-      <div class="button" @click="bobleStart">冒泡排序</div>
+      <div class="button" @click="bubStart">冒泡排序</div>
       <div class="button" @click="insertStart">插入排序</div>
       <div class="button" @click="() => (flag = !flag)">
         {{ flag ? "暂停" : "开始" }}
@@ -29,7 +29,7 @@ const draw = (changeList: number[]) => {
   const ctx = context.value;
   if (!ctx) return;
   ctx.clearRect(0, 0, WIDTH, HEIGHT);
-  console.log(changeList);
+
   randomList.forEach((node, i) => {
     const x = node * Math.cos((Math.PI / (length / 2)) * i);
     const y = node * Math.sin((Math.PI / (length / 2)) * i);
@@ -47,6 +47,7 @@ const draw = (changeList: number[]) => {
     ctx.moveTo(WIDTHCENTER, HEIGHTCENTER);
     ctx.stroke();
   });
+
   return new Promise<void>((res) => {
     if (flag.value) {
       setTimeout(() => {
@@ -100,7 +101,7 @@ async function* sort2() {
   yield false;
 }
 
-const bobleStart = async () => {
+const bubStart = async () => {
   randomList = Array.from({ length }).map(() => Math.random() * 500);
   let next = sort();
   while (!(await next.next()).done);
