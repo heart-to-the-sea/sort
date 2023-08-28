@@ -5,23 +5,25 @@
       <div class="button" @click="bubStart">冒泡排序</div>
       <div class="button" @click="insertStart">插入排序</div>
       <div class="button" @click="selectStart">选择排序</div>
+      <div class="button" @click="shellStart">希尔排序</div>
       <div class="button" @click="() => (flag = !flag)">
         {{ flag ? "暂停" : "开始" }}
       </div>
     </div>
+    <div style="padding: 15px">{{ time }}</div>
   </div>
 </template>
 
 <script lang="ts" setup>
 import { onMounted, ref } from "vue";
-const length = 720;
+const length = 300;
 const WIDTH = 1000;
 const HEIGHT = 1000;
 const WIDTHCENTER = WIDTH / 2;
 const HEIGHTCENTER = HEIGHT / 2;
 let randomList = Array.from({ length }).map(() => Math.random() * 500);
 
-const count = ref(0);
+const time = ref(0);
 const flag = ref(true);
 const canvas = ref<HTMLCanvasElement>();
 const context = ref<CanvasRenderingContext2D | null>();
@@ -112,6 +114,48 @@ async function* sort3() {
         changeList.push(perIndex);
       }
     }
+    let temp = randomList[i];
+    randomList[i] = randomList[perIndex];
+    randomList[perIndex] = temp;
+    await draw(changeList);
+    yield true;
+  }
+  await draw([]);
+  yield false;
+}
+// 插入排序
+async function* sort4() {
+  let temp = undefined,
+    gap = 1;
+  // 动态定义间隔序列
+  while (gap < randomList.length / 3) {
+    gap = gap * 3 + 1;
+  }
+  for (gap; gap > 0; gap = Math.floor(gap / 3)) {
+    let changeList = [];
+    for (var i = gap; i < randomList.length; i++) {
+      let j = -1;
+      temp = randomList[i];
+      for (j = i - gap; j >= 0 && randomList[j] > temp; j -= gap) {
+        randomList[j + gap] = randomList[j];
+        changeList.push(j + gap);
+      }
+      randomList[j + gap] = temp;
+      await draw(changeList);
+      yield true;
+    }
+    yield false;
+  }
+
+  for (let i = 0; i < randomList.length; i++) {
+    let changeList = [];
+    let perIndex = i;
+    for (let j = i; j < randomList.length; j++) {
+      if (randomList[perIndex] >= randomList[j]) {
+        perIndex = j;
+        changeList.push(perIndex);
+      }
+    }
 
     let temp = randomList[i];
     randomList[i] = randomList[perIndex];
@@ -126,19 +170,33 @@ async function* sort3() {
 const bubStart = async () => {
   randomList = Array.from({ length }).map(() => Math.random() * 500);
   let next = sort();
+  let start = Date.now();
   while (!(await next.next()).done);
+  time.value = Date.now() - start;
 };
 
 const insertStart = async () => {
   randomList = Array.from({ length }).map(() => Math.random() * 500);
   let next = sort2();
+  let start = Date.now();
   while (!(await next.next()).done);
+  time.value = Date.now() - start;
 };
 
 const selectStart = async () => {
   randomList = Array.from({ length }).map(() => Math.random() * 500);
   let next = sort3();
+  let start = Date.now();
   while (!(await next.next()).done);
+  time.value = Date.now() - start;
+};
+
+const shellStart = async () => {
+  randomList = Array.from({ length }).map(() => Math.random() * 500);
+  let next = sort4();
+  let start = Date.now();
+  while (!(await next.next()).done);
+  time.value = Date.now() - start;
 };
 
 onMounted(async () => {
