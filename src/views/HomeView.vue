@@ -4,6 +4,7 @@
     <div>
       <div class="button" @click="bubStart">冒泡排序</div>
       <div class="button" @click="insertStart">插入排序</div>
+      <div class="button" @click="selectStart">选择排序</div>
       <div class="button" @click="() => (flag = !flag)">
         {{ flag ? "暂停" : "开始" }}
       </div>
@@ -100,6 +101,27 @@ async function* sort2() {
   await draw([]);
   yield false;
 }
+// 插入排序
+async function* sort3() {
+  for (let i = 0; i < randomList.length; i++) {
+    let changeList = [];
+    let perIndex = i;
+    for (let j = i; j < randomList.length; j++) {
+      if (randomList[perIndex] >= randomList[j]) {
+        perIndex = j;
+        changeList.push(perIndex);
+      }
+    }
+
+    let temp = randomList[i];
+    randomList[i] = randomList[perIndex];
+    randomList[perIndex] = temp;
+    await draw(changeList);
+    yield true;
+  }
+  await draw([]);
+  yield false;
+}
 
 const bubStart = async () => {
   randomList = Array.from({ length }).map(() => Math.random() * 500);
@@ -110,6 +132,12 @@ const bubStart = async () => {
 const insertStart = async () => {
   randomList = Array.from({ length }).map(() => Math.random() * 500);
   let next = sort2();
+  while (!(await next.next()).done);
+};
+
+const selectStart = async () => {
+  randomList = Array.from({ length }).map(() => Math.random() * 500);
+  let next = sort3();
   while (!(await next.next()).done);
 };
 
