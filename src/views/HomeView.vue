@@ -123,7 +123,7 @@ async function* sort3() {
   await draw([]);
   yield false;
 }
-// 插入排序
+// 希尔排序
 async function* sort4() {
   let temp = undefined,
     gap = 1;
